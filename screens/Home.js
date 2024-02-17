@@ -6,18 +6,66 @@ import { TextInput as RNPTextInput } from "react-native-paper";
 import CustomHeader from "../components/CustomHeader";
 import * as ImagePicker from 'expo-image-picker';
 import * as Notifications from 'expo-notifications';
+import Spinner from 'react-native-loading-spinner-overlay';
 import { Padding, FontFamily, FontSize, Color, Border } from "../GlobalStyles";
 import CustomButton from "../components/CustomButton";
 import CustomBadge from "../components/CustomBadge";
+import axios from "axios";
 
 const Home = () => {
   const navigation = useNavigation();
 
   const [image, setImage] = React.useState(null);
   const [mvr, setMVR] = React.useState(false);
-  const [text, setText] = React.useState('none')
+  const [text, setText] = React.useState('none');
+  const [info, setInfo] = React.useState({
+    firstName: '',
+    lastName: '',
+    address: '',
+    dlNumber: '',
+    dob: '',
+    expiry: '',
+    issue: '',
+    class: '',
+    endorsement: ''
+  });
   const [isVisible, setIsVisible] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const extractData = async(data) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", "Token 7b0914ec70bc67a23c78d428431d9f37");
+    
+    const formdata = new FormData();
+    formdata.append("document", {
+        uri : data?.assets[0]?.uri,
+        type: data?.assets[0]?.mimeType,
+        name: 'license.jpg'
+       });
+    
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow"
+    };
+    
+    const response = await fetch("https://api.mindee.net/v1/products/mindee/us_driver_license/v1/predict", requestOptions);
+    const studd = await response.json();
+    setInfo({
+        firstName: studd.document.inference.prediction.first_name.value || ' ',
+        lastName: studd.document.inference.prediction.last_name.value,
+        address: studd.document.inference.prediction.address.value,
+        dlNumber: studd.document.inference.prediction.driver_license_id.value,
+        dob: studd.document.inference.prediction.date_of_birth.value,
+        expiry: studd.document.inference.prediction.expiry_date.value,
+        issue: studd.document.inference.prediction.issued_date.value,
+        class: studd.document.inference.prediction.dl_class.value,
+        endorsement: studd.document.inference.prediction.endorsements.value
+    })
+
+  }
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -27,10 +75,11 @@ const Home = () => {
       quality: 1,
     });
 
-    console.log(result);
+    // console.log('Results: ',result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      extractData(result);
     }
   };
   const openOptions = () => {
@@ -40,6 +89,8 @@ const Home = () => {
         {text: 'Open Gallery', onPress: () => pickImage()},
       ])
   }
+
+
 
   const goToMVR = () => {
     setMVR(true);
@@ -100,7 +151,7 @@ const Home = () => {
                 <View style={[styles.notobooksWrapper, styles.wrapperSpaceBlock]}>
                 <Image
                     style={styles.reportcardRemovebgPreview1Icon}
-                    contentFit="contain"
+                    contentFit="cover"
                     source={require("../assets/truck_blue.png")}
                 />
                 </View>
@@ -127,6 +178,10 @@ const Home = () => {
       </View>}
       {(image && !mvr) &&
         <View style={styles.schoolNoticeBoard}>
+                <Spinner
+                visible={!info?.firstName}
+                textContent={'Loading...'}
+                />
             <View style={styles.titleSection}>
                 <Text style={[styles.noticeBoard, styles.noticeBoardTypo]}>
                 Welcome Big Trucks LLC
@@ -152,6 +207,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.firstName}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -180,6 +236,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.lastName}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -194,6 +251,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.address}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -208,6 +266,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.dlNumber}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -222,6 +281,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.dob}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -236,6 +296,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.issue}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -250,6 +311,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.expiry}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -264,6 +326,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.endorsement}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -292,6 +355,7 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.class}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -305,7 +369,7 @@ const Home = () => {
                 {/* <View style={styles.licenseForm}>
                 </View> */}
             </ScrollView>
-            <View style={{ marginBottom: 30, marginTop: 20}}>
+            <View style={{ marginBottom: 20, marginTop: 2}}>
                 <CustomButton text={'Next'} isLoading={isLoading} toggleLoading={goToMVR}/>
             </View>
       </View>
@@ -347,7 +411,7 @@ const Home = () => {
 const styles = StyleSheet.create({
 inputBg: {
     backgroundColor: Color.white,
-    marginTop: 10,
+    marginTop: 0,
     marginRight: 5,
     alignSelf: "stretch",
     marginBottom: 10
@@ -394,7 +458,7 @@ badge: {
     paddingHorizontal: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 40
+    marginTop: 10
   },
   quickActionsScrollViewContent: {
     flexDirection: "row",
@@ -577,7 +641,7 @@ badge: {
   },
   reportcardRemovebgPreview1Icon: {
     width: 71,
-    height: 51,
+    height: 71,
   },
   basiccard11: {
     // paddingVertical: Padding.p_6xs,
