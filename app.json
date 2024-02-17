@@ -32,10 +32,15 @@
         "expo-notifications",
         {
           "sounds": [
-            "./assets/soundWave.wav"
+            "./assets/ping.wav"
           ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9966c60a-9c8b-4b98-8a78-b53388accd11"
+      }
+    }
   }
 }

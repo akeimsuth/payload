@@ -96,7 +96,7 @@ async function schedulePushNotification() {
       title: "You've got mail! 📬",
       body: `Your One time passcode is ${otp}`,
       data: { data: 'goes here' },
-      sound: 'soundWave.wav',
+      sound: 'ping.wav',
     },
     trigger: { seconds: 2, channelId: 'default' },
   });
