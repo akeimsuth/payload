@@ -1,12 +1,12 @@
 /* fonts */
 export const FontFamily = {
   poppinsLight: "Poppins-Light",
-  poppinsBold: "Poppins-Bold",
+  // poppinsBold: "Poppins-Bold",
   vTextBody1: "Roboto-Regular",
   poppinsMedium: "Poppins-Medium",
   poppinsSemiBold: "Poppins-SemiBold",
   vTextButton: "Roboto-Medium",
-  interRegular: "Inter-Regular",
+  // interRegular: "Inter-Regular",
   poppinsRegular: "Poppins-Regular",
   poppinsExtraBold: "Poppins-ExtraBold",
 };

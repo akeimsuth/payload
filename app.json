@@ -6,6 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff"
+    },
     "splash": {
       "image": "./assets/playground_logo.png",
       "resizeMode": "contain",
@@ -15,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.payload.payload"
     },
     "android": {
       "adaptiveIcon": {

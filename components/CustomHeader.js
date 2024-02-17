@@ -47,7 +47,7 @@ const CustomHeader = ({ title }) => {
 const styles = StyleSheet.create({
   headersection: {
     display: 'flex',
-    paddingVertical: 20,
+    paddingVertical: 60,
     flexDirection: "row",
     alignSelf: "stretch",
     width: '100%'

@@ -2,10 +2,13 @@ import * as React from "react";
 import { Text,Image, StyleSheet, View, Pressable, ScrollView, Alert, TouchableOpacity, Modal } from "react-native";
 // import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
+import Checkbox from 'expo-checkbox';
+import Animated, { FadeInDown, FadeOut } from    'react-native-reanimated';
 import { TextInput as RNPTextInput } from "react-native-paper";
 import CustomHeader from "../components/CustomHeader";
 import * as ImagePicker from 'expo-image-picker';
 import * as Notifications from 'expo-notifications';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Padding, FontFamily, FontSize, Color, Border } from "../GlobalStyles";
 import CustomButton from "../components/CustomButton";
@@ -18,6 +21,9 @@ const Home = () => {
   const [image, setImage] = React.useState(null);
   const [mvr, setMVR] = React.useState(false);
   const [text, setText] = React.useState('none');
+  const [disabled, setDisabled] = React.useState(true);
+  const [upload, setUpload] = React.useState(false);
+  //const [fadeAnim] = React.useState(new Animated.Value(0));
   const [info, setInfo] = React.useState({
     firstName: '',
     lastName: '',
@@ -78,16 +84,18 @@ const Home = () => {
     // console.log('Results: ',result);
 
     if (!result.canceled) {
+        setUpload(false);
       setImage(result.assets[0].uri);
       extractData(result);
     }
   };
   const openOptions = () => {
-    Alert.alert('Select an Option', 'You can either use your camera to take a picture or upload an existing image from your gallery', [
-        {text: 'Open Camera', onPress: () => console.log('OK Pressed')},
-        {text: ''},
-        {text: 'Open Gallery', onPress: () => pickImage()},
-      ])
+    setUpload(true);
+    // Alert.alert('Select an Option', 'You can either use your camera to take a picture or upload an existing image from your gallery', [
+    //     {text: 'Open Camera', onPress: () => console.log('OK Pressed')},
+    //     {text: ''},
+    //     {text: 'Open Gallery', onPress: () => pickImage()},
+    //   ])
   }
 
 
@@ -118,10 +126,17 @@ const Home = () => {
     setText('pending');
   }
 
+//   React.useEffect(() => {
+//     Animated.timing(fadeAnim, {
+//       toValue: 1,
+//       duration: 1000,
+//     }).start();
+//   }, [upload]);
+
   return (
     <View style={styles.home}>
       <CustomHeader title={'Home'}/>
-      {!image &&<View style={styles.schoolNoticeBoard}>
+      {(!image &&!upload) &&<View style={styles.schoolNoticeBoard}>
         <View style={styles.titleSection}>
           <Text style={[styles.noticeBoard, styles.noticeBoardTypo]}>
             Welcome Big Trucks LLC
@@ -131,6 +146,7 @@ const Home = () => {
           </Pressable>
         </View>
         <CustomBadge text={text}/>
+
         <Text style={styles.serviceText}>What service do you need?</Text>
         <ScrollView
           style={styles.scrollview}
@@ -176,6 +192,30 @@ const Home = () => {
             </View>
         </ScrollView>
       </View>}
+      {upload && 
+        <View style={styles.schoolNoticeBoard}>
+                <View style={styles.titleSection}>
+                <Text style={[styles.noticeBoard, styles.noticeBoardTypo]}>
+                    Welcome Big Trucks LLC
+                </Text>
+                <Pressable onPress={() => navigation.navigate('Profile')}>
+                    <Text style={styles.viewAll}>Contact Agent</Text>
+                </Pressable>
+                </View>
+                <CustomBadge text={text}/>
+                <Animated.View
+                key={'uniqueKey'}
+                entering={FadeInDown.duration(600)}
+                exiting={FadeOut.duration(400)}
+            >
+                <Text style={{ fontSize: 14, fontWeight: '500',marginTop: 20, textAlign: 'center'}}>Upload your driver's license to get started</Text>
+                <TouchableOpacity onPress={() => pickImage()} style={styles.uploadBox}>
+                <MaterialIcons name="upload" color="#FFF" size={40} />
+                <Text style={{ fontSize: 16, color: Color.white, fontWeight: '500'}}>Click here to upload your driver's license</Text>
+                </TouchableOpacity>
+            </Animated.View>
+          </View>
+            }
       {(image && !mvr) &&
         <View style={styles.schoolNoticeBoard}>
                 <Spinner
@@ -193,7 +233,7 @@ const Home = () => {
             <CustomBadge text={text}/>
             <View style={styles.licenseHead}>
                 <Image source={{ uri: image }} style={{ width: 200, height: 100 }} />
-                <Text style={{fontSize: 16, fontWeight:'500'}}>Confirm the license data below</Text>
+                <Text style={{fontSize: 16, fontWeight:'500', marginTop: 10}}>Confirm the license data below</Text>
             </View>
             <ScrollView
                 style={styles.scrollview1}
@@ -208,6 +248,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.firstName}
+                        onChangeText={(text) => setInfo({ ...info, firstName: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -237,6 +278,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.lastName}
+                        onChangeText={(text) => setInfo({ ...info, lastName: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -252,6 +294,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.address}
+                        onChangeText={(text) => setInfo({ ...info, address: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -267,6 +310,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.dlNumber}
+                        onChangeText={(text) => setInfo({ ...info, dlNumber: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -282,6 +326,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.dob}
+                        onChangeText={(text) => setInfo({ ...info, dob: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -297,6 +342,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.issue}
+                        onChangeText={(text) => setInfo({ ...info, issue: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -312,6 +358,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.expiry}
+                        onChangeText={(text) => setInfo({ ...info, expiry: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -327,6 +374,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.endorsement}
+                        onChangeText={(text) => setInfo({ ...info, endorsement: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -356,6 +404,7 @@ const Home = () => {
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
                         value={info.class}
+                        onChangeText={(text) => setInfo({ ...info, class: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -365,12 +414,15 @@ const Home = () => {
                     />
                     </View>
                 </View>
-
+                <View style={styles.section}>
+                    <Checkbox style={styles.checkbox} value={!disabled} onValueChange={() => setDisabled(!disabled)} />
+                    <Text style={styles.paragraph}>Check to verify that info above is correct</Text>
+                </View>
                 {/* <View style={styles.licenseForm}>
                 </View> */}
             </ScrollView>
-            <View style={{ marginBottom: 20, marginTop: 2}}>
-                <CustomButton text={'Next'} isLoading={isLoading} toggleLoading={goToMVR}/>
+            <View style={{ marginBottom: 20, marginTop: 20}}>
+                <CustomButton text={'Next'} isLoading={isLoading} toggleLoading={goToMVR} disabled={disabled}/>
             </View>
       </View>
       }
@@ -416,6 +468,32 @@ inputBg: {
     alignSelf: "stretch",
     marginBottom: 10
 },
+section: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10
+  },
+  paragraph: {
+    fontSize: 15,
+  },
+  checkbox: {
+    margin: 8,
+  },
+uploadBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: 20,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#d3d3d3',
+    marginTop: 20,
+    paddingVertical: 40
+},
+uploadImage: {
+    width: 60,
+    height: 60
+},
 mvrContainer: {
     flex: 1,
     display: 'flex',
@@ -439,7 +517,8 @@ badge: {
     padding: 5,
     width: 90,
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 20
 },
   serviceText: {
     paddingVertical: 20,

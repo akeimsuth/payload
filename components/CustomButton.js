@@ -15,7 +15,7 @@ export default function CustomButton({text, toggleLoading, isLoading, color = "#
         <View
           style={{
             ...styles.button,
-            backgroundColor: isLoading ? color : color,
+            backgroundColor: isLoading && color || disabled && '#d3d3d3' || !disabled && color,
           }}
         >
           {isLoading && <ActivityIndicator size="large" color="white" />}
