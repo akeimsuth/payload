@@ -14,17 +14,17 @@ To run this project, you need to have Node.js and npm (or yarn) installed on you
 
 After cloning the project, navigate to the project directory in your terminal and run the following command to install dependencies:
 
-npm install
+```npm install```
 
 Or if you prefer yarn:
 
-yarn install
+```yarn install```
 
 ### Running the Project
 
 Once the dependencies are installed, you can start the Expo development server by running the following command:
 
-npx expo start
+```npx expo start```
 
 This will start the Expo development server and open the Expo Developer Tools in your default web browser. From there, you can choose to run the app in an iOS or Android simulator, or scan the QR code with the Expo Go app on your mobile device to run the app on your device.
 
