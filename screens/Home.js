@@ -27,23 +27,25 @@ const Home = () => {
   const [info, setInfo] = React.useState({
     firstName: '',
     lastName: '',
+    middleName: '',
     address: '',
     dlNumber: '',
     dob: '',
     expiry: '',
     issue: '',
     class: '',
-    endorsement: ''
+    endorsement: '',
+    restrictions: ''
   });
   const [isVisible, setIsVisible] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const extractData = async(data) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Token 7b0914ec70bc67a23c78d428431d9f37");
+    // const myHeaders = new Headers();
+    // myHeaders.append("Authorization", "Token 7b0914ec70bc67a23c78d428431d9f37");
     
     const formdata = new FormData();
-    formdata.append("document", {
+    formdata.append("image", {
         uri : data?.assets[0]?.uri,
         type: data?.assets[0]?.mimeType,
         name: 'license.jpg'
@@ -51,23 +53,26 @@ const Home = () => {
     
     const requestOptions = {
       method: "POST",
-      headers: myHeaders,
+    //   headers: myHeaders,
       body: formdata,
       redirect: "follow"
     };
     
-    const response = await fetch("https://api.mindee.net/v1/products/mindee/us_driver_license/v1/predict", requestOptions);
+    const response = await fetch("https://api.payloadllc.com/v1/process-drivers-license", requestOptions);
     const studd = await response.json();
+    console.log("INFO: ",studd);
     setInfo({
-        firstName: studd.document.inference.prediction.first_name.value || ' ',
-        lastName: studd.document.inference.prediction.last_name.value,
-        address: studd.document.inference.prediction.address.value,
-        dlNumber: studd.document.inference.prediction.driver_license_id.value,
-        dob: studd.document.inference.prediction.date_of_birth.value,
-        expiry: studd.document.inference.prediction.expiry_date.value,
-        issue: studd.document.inference.prediction.issued_date.value,
-        class: studd.document.inference.prediction.dl_class.value,
-        endorsement: studd.document.inference.prediction.endorsements.value
+        firstName: studd.data[0].text || ' ',
+        lastName: studd.data[1].text,
+        middleName: studd.data[2].text,
+        address: studd.data[17].text,
+        dlNumber: studd.data[8].text,
+        dob: studd.data[10].text,
+        expiry: studd.data[9].text,
+        issue: studd.data[11].text,
+        class: studd.data[16].text,
+        endorsement: studd.data[13].text,
+        restrictions: studd.data[15].text
     })
 
   }
@@ -263,6 +268,8 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.middleName}
+                        onChangeText={(text) => setInfo({ ...info, middleName: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
@@ -389,6 +396,8 @@ const Home = () => {
                         style={styles.inputBg}
                         mode="outlined"
                         placeholderTextColor="rgba(0, 0, 0, 0.87)"
+                        value={info.restrictions}
+                        onChangeText={(text) => setInfo({ ...info, restrictions: text })}
                         theme={{
                             fonts: {
                             regular: { fontFamily: "Roboto", fontWeight: "Regular" },
