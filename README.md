@@ -32,7 +32,6 @@ This will start the Expo development server and open the Expo Developer Tools in
 
 - [React Native](https://reactnative.dev/) - A framework for building native apps using React.
 - [Expo](https://expo.dev/) - A framework and platform for universal React applications.
-- [Other dependencies you have used]
 
 ## Authors
 
